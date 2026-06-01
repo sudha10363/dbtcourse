@@ -1,0 +1,46 @@
+airstats:
+  outputs:
+    dev:
+      type: snowflake
+      account: mteuuzv-so37500
+      user: dbt
+
+      role: TRANSFORM
+      private_key: |
+        -----BEGIN ENCRYPTED PRIVATE KEY-----
+        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
+        -----END ENCRYPTED PRIVATE KEY-----
+      private_key_passphrase: s
+
+      database: airstats
+      schema: DEV
+      threads: 1
+      warehouse: COMPUTE_WH
+  target: dev

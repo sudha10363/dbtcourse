@@ -1,0 +1,62 @@
+version: 2
+
+models:
+  - name: silver_airports
+    description: '{{ doc("silver_overview") }}'
+    columns:
+      - name: airport_ident
+        description: "The unique identifier for the airport."
+        tests:
+          - unique
+          - not_null
+          - dbt_expectations.expect_column_value_lengths_to_be_between:
+              min_value: 1
+
+  - name: silver_runways
+    description: "Cleaned runway data associated with airports."
+    columns:
+      - name: runway_id
+        description: "The unique identifier for the runway."
+        tests:
+          - unique
+          - not_null
+      - name: airport_ident
+        description: "The airport identifier this runway belongs to."
+        tests:
+          - relationships:
+              to: ref('silver_airports')
+              field: airport_ident
+              config:
+                severity: warn
+      - name: runway_closed
+        description: "Indicator if the runway is closed (1) or open (0)."
+        tests:
+          - accepted_values:
+              values: [0, 1] 
+      - name: runway_length_ft
+        description: "Length of the runway in feet."
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+  - name: silver_airport_comments
+    description: "User comments regarding different airports."
+    columns:
+      - name: comment_id
+        description: "Unique identifier for the comment."
+        tests:
+          - unique
+          - not_null
+      - name: airport_ident
+        description: "The airport identifier this comment references."
+        tests:
+          - relationships:
+              to: ref('silver_airports')
+              field: airport_ident
+              config:
+                severity: warn
+      - name: comment_body
+        description: "The actual text of the user's comment."
+        tests:
+          - dbt_expectations.expect_column_value_lengths_to_be_between:
+              min_value: 1
